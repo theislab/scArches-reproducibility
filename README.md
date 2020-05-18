@@ -46,3 +46,16 @@ Notebook  | path
 To run the notebooks and scripts you need following packages :
 
 scnet, tensorflow, keras, scanpy, numpy, scikit-learn, matplotlib, scipy and splatter(R).
+
+### Benchmarks 
+Method  | Notebook Path     
+---------------| ---------------
+| [*mnnCorrect*](https://nbviewer.jupyter.org/github.com/theislab/scnet_reproducibility/blob/master/notebooks/Benchmarks/mnnCorrect.ipynb)| notebooks/Benchmarks/mnnCorrect.ipynb| 
+| [*Conos*](https://nbviewer.jupyter.org/github.com/theislab/scnet_reproducibility/blob/master/notebooks/Benchmarks/Conos.ipynb)| notebooks/Benchmarks/Conos.ipynb| 
+| [*Harmony*](https://nbviewer.jupyter.org/github.com/theislab/scnet_reproducibility/blob/master/notebooks/Benchmarks/Harmony.ipynb)| notebooks/Benchmarks/Harmony.ipynb| 
+| [*Liger*](https://nbviewer.jupyter.org/github.com/theislab/scnet_reproducibility/blob/master/notebooks/Benchmarks/Liger.ipynb)| notebooks/Benchmarks/Liger.ipynb| 
+| [*Scanorama*](https://nbviewer.jupyter.org/github.com/theislab/scnet_reproducibility/blob/master/notebooks/Benchmarks/Scanorama.ipynb)| notebooks/Benchmarks/Conos.ipynb| 
+| [*PCA*](https://nbviewer.jupyter.org/github.com/theislab/scnet_reproducibility/blob/master/notebooks/Benchmarks/PCA.ipynb)| notebooks/Benchmarks/PCA.ipynb| 
+| [*Seurat*](https://nbviewer.jupyter.org/github.com/theislab/scnet_reproducibility/blob/master/notebooks/Benchmarks/Seurat.ipynb)| notebooks/Benchmarks/Seurat.ipynb| 
+
+In the notebooks, the data is assumed to be in a folder named "data" in the same directory as the notebook.
