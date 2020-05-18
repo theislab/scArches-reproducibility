@@ -1,6 +1,8 @@
 library(Seurat)
 
-
+######
+## The target batches and the data in this script is for the mouse brain dataset. Change the targets and the addresses for your dataset.
+######
 
 batch1 <- read.csv("./mouse_brain_batch1.csv", row.names = 1)
 batch2 <- read.csv("./mouse_brain_batch2.csv", row.names = 1)
@@ -28,21 +30,21 @@ for (i in 0:4){
     
     
     
-    pancreas.list <- list(seurat_batch1, seurat_batch2)
-    names(pancreas.list) <- c(1, 2)
+    s.list <- list(seurat_batch1, seurat_batch2)
+    names(s.list) <- c(1, 2)
     
     k = seurat_batch1@assays$RNA@data@Dim[2]
     if(k < 200){
-      pancreas.anchors <- FindIntegrationAnchors(object.list = pancreas.list, dims = 1:30, k.filter = k)
+      s.anchors <- FindIntegrationAnchors(object.list = s.list, dims = 1:30, k.filter = k)
     }
     else{
-      pancreas.anchors <- FindIntegrationAnchors(object.list = pancreas.list, dims = 1:30)
+      s.anchors <- FindIntegrationAnchors(object.list = s.list, dims = 1:30)
     }
     
-    pancreas.integrated <- IntegrateData(anchorset = pancreas.anchors, dims = 1:30)
+    s.integrated <- IntegrateData(anchorset = s.anchors, dims = 1:30)
     
     
-    corrected = as.matrix(pancreas.integrated[["integrated"]]@data)
+    corrected = as.matrix(s.integrated[["integrated"]]@data)
     
     write.csv(corrected, paste("./results/Seurat/mouse_brain/corrected-", subsample_frac, "-", i, ".csv", sep=""))
 
