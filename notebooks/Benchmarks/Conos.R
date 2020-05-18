@@ -1,6 +1,9 @@
 library(Seurat)
 library(conos)
 
+######
+## The target batches and the data in this script is for the pancreas dataset. Change the targets and the addresses for your dataset.
+######
 
 seuratPreprocess <- function(sb) {
   so <- ScaleData(object = sb)
