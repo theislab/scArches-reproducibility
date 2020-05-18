@@ -1,5 +1,9 @@
 library(liger)
 
+######
+## The target batches and the data in this script is for the pancreas dataset. Change the targets and the addresses for your dataset.
+######
+
 batch1 <- read.csv("./pancreas_batch1.csv", row.names = 1)
 batch2 <- read.csv("./pancreas_batch2.csv", row.names = 1)
 
