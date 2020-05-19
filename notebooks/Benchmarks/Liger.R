@@ -22,7 +22,7 @@ for (i in 0:4){
     data.list = list(b1=batch1_df, b2=batch2_df)
     data.liger <- createLiger(data.list, remove.missing = F)
     
-    data.liger <- normalize(data.liger)
+    data.liger@norm.data <- data.liger@raw.data
     
     var.genes <- row.names(batch1_df)
     data.liger@var.genes <- var.genes
