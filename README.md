@@ -28,6 +28,7 @@ Study       | notebook path
 | [*Tabula Senis Muris*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/data_analysis/TabulaSenis.ipynb)| notebooks/data_analysis/TabulaSenis.ipynb| 
 | [*Mouse Cell Atlas*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/data_analysis/MouseCellAtlas.ipynb)| notebooks/data_analysis/MouseCellAtlas.ipynb| 
 | [*Panorama*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/data_analysis/panorama.ipynb)| notebooks/data_analysis/panorama.ipynb| 
+| [*Covid-19*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/data_analysis/Covid-19.ipynb)| notebooks/data_analysis/Covid-19.ipynb| 
 
 ### Notebooks (including paper plots) 
 Notebook  | path     
