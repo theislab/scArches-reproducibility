@@ -1,4 +1,4 @@
-# scnet_reproducibility
+# scArches_reproducibility
 
 <img align="center" src="./sketch.png?raw=true">
 
