@@ -2,7 +2,7 @@
 
 <img align="center" src="./sketch.png?raw=true">
 
-Reproducing results from the [scNet paper]().
+Reproducing results from the [scArches]().
 
 ## Getting Started
 
