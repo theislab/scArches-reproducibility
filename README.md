@@ -1,8 +1,7 @@
 # scArches_reproducibility
 
-<img align="center" src="./sketch.png?raw=true">
 
-Reproducing results from the [scArches]().
+Reproducing results from the [scArches](https://github.com/theislab/scarches).
 
 ## Getting Started
 
