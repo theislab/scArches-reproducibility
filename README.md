@@ -4,16 +4,10 @@
 Reproducing results from the [scArches](https://github.com/theislab/scarches).
 
 ## Getting Started
-
-```bash
-cd scripts/
-python DataDownloader.py
-python ModelTrainer.py all
-```
-
-Then you can run each notebook and reproduce the results.
+In the first steps, you will have to download datasets, latent space representations, and pre-trained models to run the each notebook and reproduce the results.
 
 All datasets are available in this drive [directory](https://drive.google.com/drive/folders/1QQXDuUjKG8CTnwWW_u83MDtdrBXr8Kpq?usp=sharing).
+All latent space represenstations and pre-trained models are available in this drive [directory](https://drive.google.com/drive/folders/1QqNCBv19-iF9whYIMkVL6DyBRH0x_G57?usp=sharing).
 
 ## Table of Notebooks 
 
