@@ -35,7 +35,14 @@ Notebook  | path
 | [*Out of sample batch correction - Pancreas (Alpha + Gamma)*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/sample_runs/OutOfSample/OutOfSample_Pancreas_Alpha.ipynb)| notebooks/OutOfSample/OutOfSample_Pancreas_Alpha.ipynb| 
 | [*Out of sample batch correction - Pancreas (Alpha + Gamma)*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/sample_runs/OutOfSample/OutOfSample_Pancreas_Alpha+Gamma.ipynb)| notebooks/OutOfSample/OutOfSample_Pancreas_Alpha+Gamma.ipynb| 
 | [*Integration and Classification - TabulaSenisMuris*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/sample_runs/tabula_senis_muris.ipynb)| notebooks/sample_runs/tabula_senis_muris.ipynb| 
-| [*Integration and Classification - MouseCellAtlas (with Tabula Senis Muris)*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/sample_runs/tabula_senis_mca.ipynb)| notebooks/sample_runs/tabula_senis_mca.ipynb| 
+| [*Integration - Tabula Senis Muris with MouseCellAtlas (MCA)*](https://nbviewer.jupyter.org/github/theislab/scnet_reproducibility/blob/master/notebooks/sample_runs/tabula_senis_mca.ipynb)| notebooks/sample_runs/tabula_senis_mca.ipynb|
+| [*Sample HCL MCA training*](https://nbviewer.jupyter.org/github/theislab/scArches-reproducibility/blob/master/notebooks/sample_runs/HCL_MCA.ipynb)| notebooks/sample_runs/HCL_MCA.ipynb|
+| [*HCL MCA Integration Latent Analysis*](https://nbviewer.jupyter.org/github/theislab/scArches-reproducibility/blob/master/notebooks/figures/HCL_analysis.ipynb)| notebooks/figures/HCL_analysis.ipynb|
+| [*HCL MCA Integration UMAPs*](https://nbviewer.jupyter.org/github/theislab/scArches-reproducibility/blob/master/notebooks/figures/HCL_UMAPs.ipynb)| notebooks/figures/HCL_UMAPs.ipynb|
+| [*Sample COVID19 training*](https://nbviewer.jupyter.org/github/theislab/scArches-reproducibility/blob/master/notebooks/figures/COVID19_training.ipynb)| notebooks/figures/COVID19_training.ipynb|
+| [*COVID19 Latent Analysis*](https://nbviewer.jupyter.org/github/theislab/scArches-reproducibility/blob/master/notebooks/figures/covid_analyses.ipynb)| notebooks/figures/covid_analyses.ipynb|
+| [*COVID19 UMAPs*](https://nbviewer.jupyter.org/github/theislab/scArches-reproducibility/blob/master/notebooks/figures/COVID19_UMAPs.ipynb)| notebooks/figures/COVID19_UMAPs.ipynb|
+
 
 To run the notebooks and scripts you need following packages :
 
