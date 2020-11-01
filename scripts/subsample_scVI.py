@@ -11,7 +11,7 @@ import numpy as np
 import torch
 import os
 import argparse
-from scnet.utils import remove_sparsity
+from scarches.utils import remove_sparsity
 
 DATASETS = {
     "pancreas": {"name": "pancreas", "batch_key": "study", "cell_type_key": "cell_type",

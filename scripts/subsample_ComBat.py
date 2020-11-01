@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("../")
 
 import scanpy as sc
@@ -14,10 +15,9 @@ from sklearn.metrics import silhouette_score
 import os
 import argparse
 from sklearn.preprocessing import LabelEncoder
-from scnet.utils import remove_sparsity
+from scarches.utils import remove_sparsity
 import numpy as np
 import csv
-
 
 
 def clustering_scores(labels, newX, batch_ind):
@@ -26,12 +26,11 @@ def clustering_scores(labels, newX, batch_ind):
     asw_score = silhouette_score(newX, batch_ind)
     nmi_score = NMI(labels, labels_pred)
     ari_score = ARI(labels, labels_pred)
-        
-    return asw_score, nmi_score, ari_score   
+
+    return asw_score, nmi_score, ari_score
 
 
 def entropy_batch_mixing(latent, labels, n_neighbors=50, n_pools=50, n_samples_per_pool=100):
-    
     def entropy_from_indices(indices):
         return entropy(np.array(itemfreq(indices)[:, 1].astype(np.int32)))
 
@@ -48,16 +47,18 @@ def entropy_batch_mixing(latent, labels, n_neighbors=50, n_pools=50, n_samples_p
         score = np.mean([
             np.mean(entropies[np.random.choice(len(entropies), size=n_samples_per_pool)])
             for _ in range(n_pools)
-        ])    
-    
+        ])
+
     return score
 
 
-
 DATASETS = {
-    "pancreas": {"name": "pancreas", "batch_key": "study", "cell_type_key": "cell_type", "target": ["Pancreas Celseq", "Pancreas CelSeq2"], "HV": True},
-    "pbmc": {"name": "pbmc", "batch_key": "study", "cell_type_key": "cell_type", "target": ["Drop-seq", "inDrops"], "HV": False},
-    "toy": {"name": "toy", "batch_key": "batch", "cell_type_key": "celltype", "target": ["Batch8", "Batch9"], "HV": True},
+    "pancreas": {"name": "pancreas", "batch_key": "study", "cell_type_key": "cell_type",
+                 "target": ["Pancreas Celseq", "Pancreas CelSeq2"], "HV": True},
+    "pbmc": {"name": "pbmc", "batch_key": "study", "cell_type_key": "cell_type", "target": ["Drop-seq", "inDrops"],
+             "HV": False},
+    "toy": {"name": "toy", "batch_key": "batch", "cell_type_key": "celltype", "target": ["Batch8", "Batch9"],
+            "HV": True},
 }
 
 parser = argparse.ArgumentParser(description='scNet')
@@ -84,8 +85,6 @@ adata.obs['labels'] = le.fit_transform(adata.obs[cell_type_key])
 le = LabelEncoder()
 adata.obs['batch_indices'] = le.fit_transform(adata.obs[batch_key])
 
-
-
 for i in range(5):
     for subsample_frac in [0.1, 0.2, 0.4, 0.6, 0.8, 1.0]:
         final_adata = None
@@ -98,22 +97,23 @@ for i in range(5):
                 final_adata = adata_sampled
             else:
                 final_adata = final_adata.concatenate(adata_sampled)
-        
+
         le = LabelEncoder()
         final_adata.obs['labels'] = le.fit_transform(final_adata.obs["cell_types"])
-        
+
         os.makedirs(f"./results/ComBat/{data_name}/", exist_ok=True)
-        row = ["ASW", "NMI" , "ARI" , "EBM"]
+        row = ["ASW", "NMI", "ARI", "EBM"]
         with open(f"./results/ComBat/{data_name}/{subsample_frac}-{i}.csv", 'w+') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerow(row)
         csvFile.close()
-        
-        sc.pp.combat(final_adata, key = "batch_indices")
-        
-        asw_score, nmi_score, ari_score = clustering_scores(final_adata.obs['labels'], final_adata.X, final_adata.obs['batch_indices'])
+
+        sc.pp.combat(final_adata, key="batch_indices")
+
+        asw_score, nmi_score, ari_score = clustering_scores(final_adata.obs['labels'], final_adata.X,
+                                                            final_adata.obs['batch_indices'])
         ebm_score = entropy_batch_mixing(final_adata.X, final_adata.obs['batch_indices'])
-        
+
         row = [asw_score, nmi_score, ari_score, ebm_score]
         with open(f"./results/ComBat/{data_name}/{subsample_frac}-{i}.csv", 'a') as csvFile:
             writer = csv.writer(csvFile)
