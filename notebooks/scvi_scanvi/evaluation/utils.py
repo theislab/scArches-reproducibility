@@ -54,6 +54,7 @@ def entropy_batch_mixing(adata, label_key="batch",
     """
     adata = remove_sparsity(adata)
     n_cat = len(adata.obs[label_key].unique().tolist())
+    print(f'Calculating EBM with n_cat = {n_cat}')
     neighbors = NearestNeighbors(n_neighbors=n_neighbors + 1).fit(adata.X)
     indices = neighbors.kneighbors(adata.X, return_distance=False)[:, 1:]
     batch_indices = np.vectorize(lambda i: adata.obs[label_key].values[i])(indices)
