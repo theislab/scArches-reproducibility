@@ -112,12 +112,12 @@ for deep_inject in deep_injects:
             use_batch_norm="none",
             use_observed_lib_size=True,
         )
-        print(adata_ref.obs[cell_type_key].unique())
-        print(adata_ref.obs["_scvi_labels"].unique())
-        print(adata_ref.obs[batch_key].unique())
-        print(adata_ref.obs["_scvi_batch"].unique())
-        print("Labelled Indices: ", vae._labeled_indices.shape[0])
-        print("Unlabelled Indices: ", vae._unlabeled_indices.shape[0])
+        print(adata_ref.obs[cell_type_key].unique().tolist())
+        print(adata_ref.obs["_scvi_labels"].unique().tolist())
+        print(adata_ref.obs[batch_key].unique().tolist())
+        print(adata_ref.obs["_scvi_batch"].unique().tolist())
+        print("Labelled Indices: ", len(vae._labeled_indices))
+        print("Unlabelled Indices: ", len(vae._unlabeled_indices))
 
         ref_time = time.time()
         vae.train(
@@ -146,20 +146,26 @@ for deep_inject in deep_injects:
         plt.legend()
         plt.savefig(f'{control_path}reference_elbo.png', bbox_inches='tight')
 
-        sc.pp.neighbors(adata_ref, use_rep="X_scANVI")
-        sc.tl.leiden(adata_ref)
-        sc.tl.umap(adata_ref)
+        ref_cropped = sc.AnnData(adata_ref.obsm["X_scANVI"])
+        ref_cropped.obs["celltype"] = adata_ref.obs[cell_type_key].tolist()
+        ref_cropped.obs["batch"] = adata_ref.obs[batch_key].tolist()
+        ref_cropped.obs["predictions"] = adata_ref.obs["predictions"].tolist()
+
+        sc.pp.neighbors(ref_cropped)
+        sc.tl.leiden(ref_cropped)
+        sc.tl.umap(ref_cropped)
+        ref_cropped.write_h5ad(filename=f'{dir_path}reference_data.h5ad')
+
         plt.figure()
         sc.pl.umap(
-            adata_ref,
-            color=[batch_key, cell_type_key],
+            ref_cropped,
+            color=["batch", "celltype"],
             frameon=False,
             ncols=1,
             show=False
         )
         plt.savefig(f'{control_path}umap_reference.png', bbox_inches='tight')
 
-        adata_ref.write_h5ad(filename=f'{dir_path}reference_data.h5ad')
         torch.save(vae.model.state_dict(), f'{dir_path}reference_model_state_dict')
         ref_path = f'{dir_path}ref_model/'
         if not os.path.exists(ref_path):
@@ -170,18 +176,21 @@ for deep_inject in deep_injects:
             adata_query,
             ref_path,
             use_cuda=True,
+            freeze_dropout=True,
+            freeze_expression=True,
+            freeze_decoder_first_layer=True,
             freeze_batchnorm_encoder=True,
             freeze_batchnorm_decoder=True,
-            freeze_expression=True,
+            freeze_classifier=False,
         )
-        print(adata_query.obs[cell_type_key].unique())
-        print(adata_query.obs["_scvi_labels"].unique())
-        print(adata_query.obs[batch_key].unique())
-        print(adata_query.obs["_scvi_batch"].unique())
+        print(adata_query.obs[cell_type_key].unique().tolist())
+        print(adata_query.obs["_scvi_labels"].unique().tolist())
+        print(adata_query.obs[batch_key].unique().tolist())
+        print(adata_query.obs["_scvi_batch"].unique().tolist())
         model._unlabeled_indices = np.arange(adata_query.n_obs)
         model._labeled_indices = []
         print("Labelled Indices: ", len(model._labeled_indices))
-        print("Unlabelled Indices: ", model._unlabeled_indices.shape[0])
+        print("Unlabelled Indices: ", len(model._unlabeled_indices))
 
         query_time = time.time()
         model.train(
@@ -212,53 +221,66 @@ for deep_inject in deep_injects:
         plt.legend()
         plt.savefig(f'{control_path}surgery_elbo.png', bbox_inches='tight')
 
-        sc.pp.neighbors(adata_query, use_rep="X_scANVI")
-        sc.tl.leiden(adata_query)
-        sc.tl.umap(adata_query)
+        q_cropped = sc.AnnData(adata_query.obsm["X_scANVI"])
+        q_cropped.obs["celltype"] = adata_query.obs[cell_type_key].tolist()
+        q_cropped.obs["batch"] = adata_query.obs[batch_key].tolist()
+        q_cropped.obs["predictions"] = adata_query.obs["predictions"].tolist()
+
+        sc.pp.neighbors(q_cropped)
+        sc.tl.leiden(q_cropped)
+        sc.tl.umap(q_cropped)
+        q_cropped.write_h5ad(filename=f'{dir_path}query_data.h5ad')
+
         plt.figure()
         sc.pl.umap(
-            adata_query,
-            color=[batch_key, "cell_type"],
+            q_cropped,
+            color=["batch", "celltype"],
             frameon=False,
             ncols=1,
             show=False
         )
         plt.savefig(f'{control_path}umap_query.png', bbox_inches='tight')
-        adata_query.write_h5ad(filename=f'{dir_path}query_data.h5ad')
 
         adata_full = adata_ref.concatenate(adata_query)
         adata_full.uns["_scvi"] = adata_query.uns["_scvi"]
-        print(adata_full.obs[cell_type_key].unique())
-        print(adata_full.obs["_scvi_labels"].unique())
-        print(adata_full.obs[batch_key].unique())
-        print(adata_full.obs["_scvi_batch"].unique())
+        print(adata_full.obs[cell_type_key].unique().tolist())
+        print(adata_full.obs["_scvi_labels"].unique().tolist())
+        print(adata_full.obs[batch_key].unique().tolist())
+        print(adata_full.obs["_scvi_batch"].unique().tolist())
         adata_full.obsm["X_scANVI"] = model.get_latent_representation(adata=adata_full)
 
+        adata_full.obs["predictions"] = model.predict(adata_full)
         full_predictions = model.predict(adata_full)
         print("Acc: {}".format(np.mean(full_predictions == adata_full.obs[cell_type_key])))
 
-        sc.pp.neighbors(adata_full, use_rep="X_scANVI")
-        sc.tl.leiden(adata_full)
-        sc.tl.umap(adata_full)
+        f_cropped = sc.AnnData(adata_full.obsm["X_scANVI"])
+        f_cropped.obs["celltype"] = adata_full.obs[cell_type_key].tolist()
+        f_cropped.obs["batch"] = adata_full.obs[batch_key].tolist()
+        f_cropped.obs["predictions"] = adata_full.obs["predictions"].tolist()
+        sc.pp.neighbors(f_cropped)
+        sc.tl.leiden(f_cropped)
+        sc.tl.umap(f_cropped)
+        f_cropped.write_h5ad(filename=f'{dir_path}full_data.h5ad')
+
         plt.figure()
         sc.pl.umap(
-            adata_full,
-            color=[batch_key, cell_type_key],
+            f_cropped,
+            color=["batch", "celltype"],
             frameon=False,
             ncols=1,
             show=False
         )
         plt.savefig(f'{control_path}umap_full.png', bbox_inches='tight')
-
+        plt.figure()
         sc.pl.umap(
-            adata_full[adata_ref.n_obs:],
-            color=["predictions", cell_type_key],
+            f_cropped,
+            color=["predictions"],
             frameon=False,
             ncols=1,
             show=False
         )
-        plt.savefig(f'{control_path}umap_full_pred.png', bbox_inches='tight')
-        adata_full.write_h5ad(filename=f'{dir_path}full_data.h5ad')
+        plt.savefig(f'{control_path}pred_full.png', bbox_inches='tight')
+
         torch.save(model.model.state_dict(), f'{dir_path}surgery_model_state_dict')
         surgery_path = f'{dir_path}surg_model/'
         if not os.path.exists(surgery_path):

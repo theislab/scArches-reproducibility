@@ -9,8 +9,8 @@ deep_cond = True
 surgery_opt = 'freezed'
 #surgery_opt = 'unfreezed'
 
-check_for_retrained_weights = True
-check_for_all = False
+check_for_retrained_weights = False
+check_for_all = True
 if deep_cond:
     dir_path = os.path.expanduser(
         f'~/Documents/benchmarking_results/figure_2/scanvi/deep_cond/')

@@ -113,20 +113,25 @@ for deep_inject in deep_injects:
     plt.legend()
     plt.savefig(f'{ref_control_path}reference_elbo.png', bbox_inches='tight')
 
-    sc.pp.neighbors(adata_ref, use_rep="X_scANVI")
-    sc.tl.leiden(adata_ref)
-    sc.tl.umap(adata_ref)
+    ref_cropped = sc.AnnData(adata_ref.obsm["X_scANVI"])
+    ref_cropped.obs["celltype"] = adata_ref.obs[cell_type_key].tolist()
+    ref_cropped.obs["batch"] = adata_ref.obs[batch_key].tolist()
+    ref_cropped.obs["predictions"] = adata_ref.obs["predictions"].tolist()
+    sc.pp.neighbors(ref_cropped)
+    sc.tl.leiden(ref_cropped)
+    sc.tl.umap(ref_cropped)
+    ref_cropped.write_h5ad(filename=f'{ref_model_path}reference_data.h5ad')
     plt.figure()
     sc.pl.umap(
-        adata_ref,
-        color=[batch_key, cell_type_key],
+        ref_cropped,
+        color=["batch", "celltype"],
         frameon=False,
         ncols=1,
         show=False
     )
     plt.savefig(f'{ref_control_path}umap_reference.png', bbox_inches='tight')
 
-    adata_ref.write_h5ad(filename=f'{ref_model_path}reference_data.h5ad')
+
     torch.save(vae.model.state_dict(), f'{ref_model_path}reference_model_state_dict')
     ref_path = f'{ref_model_path}ref_model/'
     if not os.path.exists(ref_path):
@@ -165,6 +170,10 @@ for deep_inject in deep_injects:
             unfrozen=full_retrain,
             freeze_expression=freeze_exp,
             freeze_decoder_first_layer=freeze_decoder_first_layer,
+            freeze_batchnorm_decoder=True,
+            freeze_batchnorm_encoder=True,
+            freeze_dropout=True,
+            freeze_classifier=False,
         )
         model._unlabeled_indices = np.arange(adata_query.n_obs)
         model._labeled_indices = []
@@ -198,48 +207,63 @@ for deep_inject in deep_injects:
         plt.legend()
         plt.savefig(f'{surg_control_path}surgery_elbo.png', bbox_inches='tight')
 
-        sc.pp.neighbors(adata_query, use_rep="X_scANVI")
-        sc.tl.leiden(adata_query)
-        sc.tl.umap(adata_query)
+        q_cropped = sc.AnnData(adata_query.obsm["X_scANVI"])
+        q_cropped.obs["celltype"] = adata_query.obs[cell_type_key].tolist()
+        q_cropped.obs["batch"] = adata_query.obs[batch_key].tolist()
+        q_cropped.obs["predictions"] = adata_query.obs["predictions"].tolist()
+
+        sc.pp.neighbors(q_cropped)
+        sc.tl.leiden(q_cropped)
+        sc.tl.umap(q_cropped)
+        q_cropped.write_h5ad(filename=f'{dir_path}query_data.h5ad')
+
         plt.figure()
         sc.pl.umap(
-            adata_query,
-            color=[batch_key, "cell_type"],
+            q_cropped,
+            color=["batch", "celltype"],
             frameon=False,
             ncols=1,
             show=False
         )
         plt.savefig(f'{surg_control_path}umap_query.png', bbox_inches='tight')
-        adata_query.write_h5ad(filename=f'{surg_model_path}query_data.h5ad')
+
 
         adata_full = adata_ref.concatenate(adata_query)
         adata_full.uns["_scvi"] = adata_query.uns["_scvi"]
         adata_full.obsm["X_scANVI"] = model.get_latent_representation(adata=adata_full)
+        adata_full.obs["predictions"] = model.predict(adata_full)
         full_predictions = model.predict(adata_full)
         print("Acc: {}".format(np.mean(full_predictions == adata_full.obs[cell_type_key])))
 
-        sc.pp.neighbors(adata_full, use_rep="X_scANVI")
-        sc.tl.leiden(adata_full)
-        sc.tl.umap(adata_full)
+        f_cropped = sc.AnnData(adata_full.obsm["X_scANVI"])
+        f_cropped.obs["celltype"] = adata_full.obs[cell_type_key].tolist()
+        f_cropped.obs["batch"] = adata_full.obs[batch_key].tolist()
+        f_cropped.obs["predictions"] = adata_full.obs["predictions"].tolist()
+
+        sc.pp.neighbors(f_cropped)
+        sc.tl.leiden(f_cropped)
+        sc.tl.umap(f_cropped)
+        f_cropped.write_h5ad(filename=f'{surg_model_path}full_data.h5ad')
+
         plt.figure()
         sc.pl.umap(
-            adata_full,
-            color=[batch_key, cell_type_key],
+            f_cropped,
+            color=["batch", "celltype"],
             frameon=False,
             ncols=1,
             show=False
         )
         plt.savefig(f'{surg_control_path}umap_full.png', bbox_inches='tight')
         sc.pl.umap(
-            adata_full[adata_ref.n_obs:],
-            color=["predictions", cell_type_key],
+            f_cropped,
+            color=["predictions"],
             frameon=False,
             ncols=1,
             show=False
         )
         plt.savefig(f'{surg_control_path}umap_full_pred.png', bbox_inches='tight')
 
-        adata_full.write_h5ad(filename=f'{surg_model_path}full_data.h5ad')
+
         torch.save(model.model.state_dict(), f'{surg_model_path}surgery_model_state_dict')
         surgery_path = f'{surg_model_path}surg_model/'
         if not os.path.exists(surgery_path):
