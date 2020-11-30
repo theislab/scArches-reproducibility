@@ -20,9 +20,9 @@ datasets = {
         'condition_key': 'study',
         'cell_type_key': 'cell_type',
         'runs': [
-            {'reference': ['Saunders']},
-            {'reference': ['Saunders', 'Tabula_muris']},
-            {'reference': ['Saunders', 'Tabula_muris', 'Zeisel']},
+            {'reference': ['Rosenberg']},
+            {'reference': ['Rosenberg', 'Saunders']},
+            {'reference': ['Rosenberg', 'Saunders', 'Zeisel']},
         ]
     },
     'pbmc': {
@@ -49,7 +49,7 @@ datasets = {
 }
 
 def train_model(data_name, path, condition_key, cell_type_key, reference_conditions):
-    results_path = f'/home/mohsen/scarches_review_results/results/ref_query_ratio/trVAE/{data_name}/{len(reference_conditions)}/'
+    results_path = f'/home/mohsen/data/scArches/ref_query_ratio/trVAE/{data_name}/{len(reference_conditions)}/'
     os.makedirs(results_path, 
                 exist_ok=True)
     adata = sc.read(path)
@@ -58,46 +58,47 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
     target_adata = adata[~adata.obs[condition_key].isin(reference_conditions)]
     target_conditions = target_adata.obs[condition_key].unique().tolist()
 
-    network = sca.models.scArches(task_name=f"ref_query_ratio_{data_name}_reference",
+    network = sca.models.scArches(task_name=f"rqr_{data_name}_{len(reference_conditions)}_reference",
                                   x_dimension=source_adata.shape[1], 
                                   z_dimension=10,
-                                  architecture=[128, 128],
+                                  architecture=[128, 20],
                                   conditions=reference_conditions,
                                   gene_names=source_adata.var_names.tolist(),
                                   lr=0.001,
-                                  alpha=0.0005,
-                                  beta=20.0,
-                                  eta=50.0,
-                                  use_batchnorm=True,
+                                  alpha=0.1,
+                                  beta=0.5,
+                                  eta=100.0,
+                                  use_batchnorm=False,
                                   clip_value=3.0,
                                   loss_fn='mse',
-                                  model_path=f"./models/trVAE/MSE/{data_name}_{len(reference_conditions)}/",
+                                  model_path=f"./models/trVAE/",
                                   dropout_rate=0.1,
                                   output_activation='relu')
 
     start_time = time.time()
     network.train(source_adata,
-                  train_size=0.8,
+                  train_size=0.9,
                   condition_key=condition_key,
                   n_epochs=300,
-                  batch_size=512 if len(reference_conditions) > 1 else 64,
+                  batch_size=128 if len(reference_conditions) > 1 else 32,
                   early_stop_limit=15,
                   lr_reducer=10,
                   save=True,
                   retrain=True,
+                  steps_per_epoch=300,
                   )
     end_time = time.time()
 
     with open(os.path.join(results_path, 'time.txt'), 'w') as f:
         f.write(f'reference_time: {end_time - start_time}')
 
-    latent_adata = network.get_latent(source_adata, condition_key, return_z=False)
+    latent_adata = network.get_latent(source_adata, condition_key)
     latent_adata.write_h5ad(os.path.join(results_path, 'before.h5ad'))
     
 
 
     new_network = sca.operate(network, 
-                             new_task_name='ref_query_ratio_after',
+                             new_task_name=f'rqr_{data_name}_{len(reference_conditions)}_query',
                              new_conditions=target_conditions,
                              init='Xavier', 
                              version='scArches',
@@ -107,15 +108,16 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
     new_network.train(target_adata,
                       train_size=0.8, 
                       condition_key=condition_key,
-                      n_epochs=200,
-                      batch_size=1024 if len(target_conditions) > 1 else 64, 
+                      n_epochs=300,
+                      batch_size=128 if len(target_conditions) > 1 else 32, 
                       early_stop_limit=15,
                       lr_reducer=10,
                       save=True, 
-                      retrain=True,)
+                      retrain=True,
+                      steps_per_epoch=300,)
     end_time = time.time()
 
-    latent_adata = new_network.get_latent(adata, condition_key, return_z=False)
+    latent_adata = new_network.get_latent(adata, condition_key)
     latent_adata.write_h5ad(os.path.join(results_path, 'all.h5ad'))
 
     with open(os.path.join(results_path, 'time.txt'), 'w') as f:
@@ -133,7 +135,7 @@ def run_all_tasks(datasets, data_name):
         
         train_model(data_name, **data_dict)
 
-run_all_tasks(datasets, 'pancreas')
-run_all_tasks(datasets, 'mouse_brain')
-run_all_tasks(datasets, 'pbmc')
-run_all_tasks(datasets, 'toy')
+# run_all_tasks(datasets, 'pancreas')
+# run_all_tasks(datasets, 'mouse_brain')
+# run_all_tasks(datasets, 'pbmc')
+# run_all_tasks(datasets, 'toy')

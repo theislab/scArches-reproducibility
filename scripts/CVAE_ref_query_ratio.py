@@ -50,7 +50,7 @@ datasets = {
 }
 
 def train_model(data_name, path, condition_key, cell_type_key, reference_conditions):
-    results_path = f'/home/mohsen/scarches_review_results/results/ref_query_ratio/CVAE_MSE/{data_name}/{len(reference_conditions)}/'
+    results_path = f'/home/mohsen/data/scArches/ref_query_ratio/CVAE/{data_name}/{len(reference_conditions)}/'
     os.makedirs(results_path, 
                 exist_ok=True)
     adata = sc.read(path)
@@ -62,17 +62,17 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
     network = sca.models.scArches(task_name=f"ref_query_ratio_{data_name}_{len(reference_conditions)}_reference",
                                   x_dimension=source_adata.shape[1], 
                                   z_dimension=10,
-                                  architecture=[128],
+                                  architecture=[128, 20],
                                   conditions=reference_conditions,
                                   gene_names=source_adata.var_names.tolist(),
-                                  alpha=0.01,
+                                  alpha=0.1,
                                   beta=0.0,
                                   eta=100.0,
                                   use_batchnorm=False,
                                   clip_value=3.0,
                                   loss_fn='mse',
                                   model_path=f"./models/CVAE/",
-                                  dropout_rate=0.05,
+                                  dropout_rate=0.1,
                                   output_activation='relu')
 
     start_time = time.time()
@@ -85,6 +85,7 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
                   lr_reducer=10,
                   save=True,
                   retrain=True,
+                  steps_per_epoch=300
                   )
     end_time = time.time()
     with open(os.path.join(results_path, 'time.txt'), 'w') as f:
@@ -96,8 +97,7 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
     new_network = sca.operate(network, 
                              new_task_name=f'ref_query_ratio_{data_name}_{len(reference_conditions)}_after',
                              new_conditions=target_conditions,
-                             version='scArches v1',
-                             new_training_kwargs={'alpha': 0.023, 'eta': 1000.0},
+                             version='scArches',
                              remove_dropout=False)
 
     start_time = time.time()
@@ -109,7 +109,8 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
                       early_stop_limit=15,
                       lr_reducer=10,
                       save=True, 
-                      retrain=True,)
+                      retrain=True,
+                      steps_per_epoch=300)
     end_time = time.time()
 
     latent_adata = new_network.get_latent(adata, condition_key)
@@ -125,7 +126,6 @@ def run_all_tasks(datasets, data_name):
 
     for run in dataset['runs']:
         reference_conditions = run['reference']
-        
         data_dict = dataset.copy()
         data_dict.pop('runs')
         data_dict['reference_conditions'] = reference_conditions
@@ -133,6 +133,6 @@ def run_all_tasks(datasets, data_name):
         train_model(data_name, **data_dict)
 
 # run_all_tasks(datasets, 'pancreas')
-run_all_tasks(datasets, 'mouse_brain')
+# run_all_tasks(datasets, 'mouse_brain')
 # run_all_tasks(datasets, 'pbmc')
 # run_all_tasks(datasets, 'toy')

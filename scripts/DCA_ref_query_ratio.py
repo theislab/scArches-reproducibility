@@ -21,9 +21,9 @@ datasets = {
         'condition_key': 'study',
         'cell_type_key': 'cell_type',
         'runs': [
-            {'reference': ['Saunders']},
-            {'reference': ['Saunders', 'Tabula_muris']},
-            {'reference': ['Saunders', 'Tabula_muris', 'Zeisel']},
+            {'reference': ['Rosenberg']},
+            {'reference': ['Rosenberg', 'Saunders']},
+            {'reference': ['Rosenberg', 'Saunders', 'Zeisel']},
         ]
     },
     'pbmc': {
@@ -50,7 +50,7 @@ datasets = {
 }
 
 def train_model(data_name, path, condition_key, cell_type_key, reference_conditions):
-    results_path = f'/home/mohsen/scarches_review_results/results/ref_query_ratio/CVAE_MSE/{data_name}/{len(reference_conditions)}/'
+    results_path = f'/home/mohsen/data/scArches/ref_query_ratio/DCA/{data_name}/{len(reference_conditions)}/'
     os.makedirs(results_path, 
                 exist_ok=True)
     adata = sc.read(path)
@@ -62,17 +62,16 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
     network = sca.models.scArches(task_name=f"ref_query_ratio_{data_name}_{len(reference_conditions)}_reference",
                                   x_dimension=source_adata.shape[1], 
                                   z_dimension=10,
-                                  architecture=[128],
+                                  architecture=[128, 20],
                                   conditions=reference_conditions,
                                   gene_names=source_adata.var_names.tolist(),
                                   lr=0.001,
-                                  alpha=0.00001,
-                                  beta=0.0,
-                                  eta=1.0,
+                                  alpha=0.1,
+                                  eta=100.0,
                                   use_batchnorm=True,
                                   clip_value=3.0,
                                   loss_fn='nb',
-                                  model_path=f"./models/CVAE/NB/",
+                                  model_path=f"./models/DCA/",
                                   dropout_rate=0.1,
                                   output_activation='relu')
 
@@ -86,6 +85,7 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
                   lr_reducer=10,
                   save=True,
                   retrain=True,
+                  steps_per_epoch=300
                   )
     end_time = time.time()
     with open(os.path.join(results_path, 'time.txt'), 'w') as f:
@@ -106,12 +106,13 @@ def train_model(data_name, path, condition_key, cell_type_key, reference_conditi
     new_network.train(target_adata,
                       train_size=0.9, 
                       condition_key=condition_key,
-                      n_epochs=200,
-                      batch_size=32, 
+                      n_epochs=300,
+                      batch_size=128, 
                       early_stop_limit=15,
                       lr_reducer=10,
                       save=True, 
-                      retrain=True,)
+                      retrain=True,
+                      steps_per_epoch=300,)
     end_time = time.time()
 
     latent_adata = new_network.get_latent(adata, condition_key)
@@ -137,4 +138,4 @@ def run_all_tasks(datasets, data_name):
 # run_all_tasks(datasets, 'pancreas')
 # run_all_tasks(datasets, 'mouse_brain')
 # run_all_tasks(datasets, 'pbmc')
-run_all_tasks(datasets, 'toy')
+# run_all_tasks(datasets, 'toy')
