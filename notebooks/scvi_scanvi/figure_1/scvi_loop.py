@@ -11,7 +11,7 @@ sc.set_figure_params(figsize=(4, 4))
 
 deep_injects = [True, False]
 n_epochs_surgery = 300
-leave_out_cell_types = ['Pancreas Alpha']
+leave_out_cell_types = ['Pancreas Alpha', 'Pancreas Gamma']
 
 target_batches = ["Pancreas SS2", "Pancreas CelSeq2"]
 batch_key = "study"
@@ -30,9 +30,9 @@ early_stopping_kwargs = {
 for deep_inject in deep_injects:
     # Save right dir path
     if deep_inject:
-        dir_path = os.path.expanduser(f'~/Documents/benchmarking_results/figure_1/scvi/deep_cond/')
+        dir_path = os.path.expanduser(f'~/Documents/benchmarking_results/figure_1/scvi/deep_cond_ood2/')
     else:
-        dir_path = os.path.expanduser(f'~/Documents/benchmarking_results/figure_1/scvi/first_cond/')
+        dir_path = os.path.expanduser(f'~/Documents/benchmarking_results/figure_1/scvi/first_cond_ood2/')
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     control_path = f'{dir_path}controlling/'

@@ -9,10 +9,11 @@ import numpy as np
 
 sc.set_figure_params(figsize=(4, 4))
 
-dataset = 'immune_all_human_fig6'
+dataset = 'brain'
 version = 'vanilla'
 #version = 'scarches'
-deep_injects = [True,False]
+deep_injects = [True
+                ]
 test_nrs = [1,2,3,4]
 
 n_epochs_vae = 500

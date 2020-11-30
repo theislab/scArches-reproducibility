@@ -4,9 +4,9 @@ from scvi.core.modules import SCANVAE
 
 torch.set_printoptions(edgeitems=10, sci_mode=False, precision=4)
 
-deep_cond = True
-#surgery_opt = 'freezed_expr'
-surgery_opt = 'freezed'
+deep_cond = False
+surgery_opt = 'freezed_expr'
+#surgery_opt = 'freezed'
 #surgery_opt = 'unfreezed'
 
 check_for_retrained_weights = False

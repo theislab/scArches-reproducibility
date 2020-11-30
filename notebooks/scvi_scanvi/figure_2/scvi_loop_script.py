@@ -82,7 +82,7 @@ for deep_inject in deep_injects:
     sc.pp.neighbors(ref_cropped)
     sc.tl.leiden(ref_cropped)
     sc.tl.umap(ref_cropped)
-    ref_cropped.write_h5ad(filename=f'{dir_path}reference_data.h5ad')
+    ref_cropped.write_h5ad(filename=f'{ref_model_path}reference_data.h5ad')
     plt.figure()
     sc.pl.umap(
         ref_cropped,
@@ -110,12 +110,15 @@ for deep_inject in deep_injects:
 
         if surgery_option == 'freezed_expr':
             freeze_exp = True
+            freeze_decoder_first_layer = True
             full_retrain = False
         if surgery_option == 'freezed':
             freeze_exp = False
+            freeze_decoder_first_layer = False
             full_retrain = False
         if surgery_option == 'unfreezed':
             freeze_exp = False
+            freeze_decoder_first_layer = False
             full_retrain = True
 
         query_ind = np.array([s in query for s in adata.obs.study])
@@ -126,8 +129,9 @@ for deep_inject in deep_injects:
             adata_query,
             ref_path,
             use_cuda=True,
-            freeze_expression=freeze_exp,
             unfrozen=full_retrain,
+            freeze_expression=freeze_exp,
+            freeze_decoder_first_layer=freeze_decoder_first_layer,
             freeze_batchnorm_decoder=True,
             freeze_batchnorm_encoder=True,
             freeze_dropout=True,
@@ -153,7 +157,7 @@ for deep_inject in deep_injects:
         sc.pp.neighbors(q_cropped)
         sc.tl.leiden(q_cropped)
         sc.tl.umap(q_cropped)
-        q_cropped.write_h5ad(filename=f'{dir_path}query_data.h5ad')
+        q_cropped.write_h5ad(filename=f'{surg_model_path}query_data.h5ad')
         plt.figure()
         sc.pl.umap(
             q_cropped,
@@ -176,7 +180,7 @@ for deep_inject in deep_injects:
         sc.pp.neighbors(f_cropped)
         sc.tl.leiden(f_cropped)
         sc.tl.umap(f_cropped)
-        f_cropped.write_h5ad(filename=f'{dir_path}full_data.h5ad')
+        f_cropped.write_h5ad(filename=f'{surg_model_path}full_data.h5ad')
         plt.figure()
         sc.pl.umap(
             f_cropped,

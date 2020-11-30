@@ -9,9 +9,9 @@ import numpy as np
 
 sc.set_figure_params(figsize=(4, 4))
 
-dataset = 'immune_all_human_fig6'
+dataset = 'brain'
 versions = ['vanilla', 'scarches']
-deep_injects_main = [True,False]
+deep_injects_main = [True, False]
 
 n_epochs_vae = 500
 early_stopping_kwargs = {
@@ -29,7 +29,14 @@ for version in versions:
     if version == "vanilla":
         deep_injects = [True]
     for deep_inject in deep_injects:
-        dir_path = os.path.expanduser(f'~/Documents/benchmarking_results/full_integration_{version}/scvi/{dataset}/')
+        # Save right dir path
+        if version == "scarches" and deep_inject == True:
+            deep_label = "/deep_cond"
+        elif version == "scarches" and deep_inject == False:
+            deep_label = "/first_cond"
+        else:
+            deep_label = ""
+        dir_path = os.path.expanduser(f'~/Documents/benchmarking_results/full_integration_{version}/scvi/{dataset}{deep_label}/')
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         control_path = f'{dir_path}controlling/'

@@ -4,13 +4,13 @@ from scvi.core.modules import VAE
 
 torch.set_printoptions(edgeitems=10, sci_mode=False, precision=4)
 
-deep_cond = True
+deep_cond = False
 surgery_opt = 'freezed_expr'
 #surgery_opt = 'freezed'
 #surgery_opt = 'unfreezed'
 
-check_for_retrained_weights = True
-check_for_all = False
+check_for_retrained_weights = False
+check_for_all = True
 if deep_cond:
     dir_path = os.path.expanduser(
         f'~/Documents/benchmarking_results/figure_2/scvi/deep_cond/')

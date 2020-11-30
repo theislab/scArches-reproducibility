@@ -215,7 +215,7 @@ for deep_inject in deep_injects:
         sc.pp.neighbors(q_cropped)
         sc.tl.leiden(q_cropped)
         sc.tl.umap(q_cropped)
-        q_cropped.write_h5ad(filename=f'{dir_path}query_data.h5ad')
+        q_cropped.write_h5ad(filename=f'{surg_model_path}query_data.h5ad')
 
         plt.figure()
         sc.pl.umap(

@@ -32,10 +32,10 @@ for deep_inject in deep_injects:
         print(f"\n\n TEST NR {test_nr} with conditions deep {deep_inject}--------------------------------------------")
         if deep_inject:
             dir_path = os.path.expanduser(
-                f'~/Documents/benchmarking_results/figure_3/scvi/brain/test_{test_nr}_deep_cond/')
+                f'~/Documents/benchmarking_results/figure_3/scvi/{dataset}/test_{test_nr}_deep_cond/')
         else:
             dir_path = os.path.expanduser(
-                f'~/Documents/benchmarking_results/figure_3/scvi/brain/test_{test_nr}_first_cond/')
+                f'~/Documents/benchmarking_results/figure_3/scvi/{dataset}/test_{test_nr}_first_cond/')
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         control_path = f'{dir_path}controlling/'
@@ -95,6 +95,7 @@ for deep_inject in deep_injects:
         vae.train(n_epochs=n_epochs_vae, frequency=1, early_stopping_kwargs=early_stopping_kwargs)
         ref_time = time.time() - ref_time
 
+        plt.figure()
         plt.plot(vae.trainer.history["elbo_train_set"][2:], label="train")
         plt.plot(vae.trainer.history["elbo_test_set"][2:], label="test")
         plt.title("Negative ELBO over training epochs")
