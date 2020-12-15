@@ -6,13 +6,13 @@ library(Hmisc)
 library(plyr)
 
 
-source("/home/mohsen/projects/scnet_reproducibility/scripts/knit_table.R") # You will need to have in the same folder knit_table.R and this plotSingleAtlas.R
+source("/home/marco/Documents/git_repos/scArches-reproducibility/scripts/knit_table.R") # You will need to have in the same folder knit_table.R and this plotSingleAtlas.R
 
 # parameters: 
 # - 'csv_file_path' would be the path of the csv file 
 
 
-plotSingleAtlas <- function(csv_file_path, outdir="/home/mohsen/data/scArches/benchmark"){
+plotSingleAtlas <- function(csv_file_path, outdir="/home/marco/Documents/metric_plots"){
   
   metrics_tab_lab <- read.csv(csv_file_path, sep = ",")
   
