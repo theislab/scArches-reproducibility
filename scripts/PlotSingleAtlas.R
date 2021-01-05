@@ -21,12 +21,12 @@ plotSingleAtlas <- function(csv_file_path, outdir="/home/marco/Documents/metric_
   metrics <- colnames(metrics_tab_lab)[!colnames(metrics_tab_lab) %in% c("data", "rqr", "method")]
   metrics <- gsub("\\.", "/", metrics)
   metrics <- gsub("_", " ", metrics)
-  metrics <- plyr::mapvalues(metrics, from = c("ASW label", "ASW label/batch", "cell cycle conservation", "hvg overlap", "trajectory", "graph conn", "iLISI", "cLISI"), 
-                             to = c("Cell type ASW", "Batch ASW", "CC conservation", "HVG conservation", "trajectory conservation", "graph connectivity", "graph iLISI", "graph cLISI"))
+  metrics <- plyr::mapvalues(metrics, from = c("ASW label", "ASW label/batch", "cell cycle conservation", "hvg overlap", "trajectory", "graph conn", "iLISI", "cLISI", "KNN"), 
+                             to = c("Cell type ASW", "Batch ASW", "CC conservation", "HVG conservation", "trajectory conservation", "graph connectivity", "graph iLISI", "graph cLISI", "kNN accuracy"))
   # metrics names as they are supposed to be ordered
   group_batch <- c("PCR batch", "Batch ASW", "graph iLISI", "graph connectivity", "kBET", "EBM")
   group_bio <- c("NMI cluster/label", "ARI cluster/label", "Cell type ASW", 
-                 "isolated label F1", "isolated label silhouette", "graph cLISI", "CC conservation", "HVG conservation", "trajectory conservation", "KNN")
+                 "isolated label F1", "isolated label silhouette", "graph cLISI", "CC conservation", "HVG conservation", "trajectory conservation", "kNN accuracy")
   group_time <- c("reference time", "query time" )
   # set original values of number of metrics
   n_metrics_batch_original <- sum(group_batch %in% metrics)
@@ -105,7 +105,7 @@ plotSingleAtlas <- function(csv_file_path, outdir="/home/marco/Documents/metric_
     metrics_tab <- add_column(metrics_tab, "Batch Correction" = score_group1, .after = "Overall Score")
     metrics_tab <- add_column(metrics_tab, "Bio conservation" = score_group2, .after = 3+n_metrics_batch)
     
-    metrics_tab <- add_column(metrics_tab, "Ratio" = ratio, .after = "Method")
+    metrics_tab <- add_column(metrics_tab, "Fine tuning" = ratio, .after = "Method")
     
     
     # order methods by the overall score
