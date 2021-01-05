@@ -131,7 +131,7 @@ plotSingleAtlas <- function(csv_file_path, outdir="/home/marco/Documents/metric_
                               geom = c("text", "text", "bar", "bar", 
                                        rep("circle", n_metrics_batch), "bar", rep("circle", n_metrics_bio), 
                                        rep("bar", n_metrics_time_original)),
-                              width = c(7,1.5,2,2, rep(1,n_metrics_batch), 2, rep(1,n_metrics_bio), rep(2, n_metrics_time_original)),
+                              width = c(7,5,2,2, rep(1,n_metrics_batch), 2, rep(1,n_metrics_bio), rep(2, n_metrics_time_original)),
                               overlay = F)
     
     # defining colors palette
