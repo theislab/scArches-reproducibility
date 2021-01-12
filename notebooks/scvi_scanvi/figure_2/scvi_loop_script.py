@@ -4,7 +4,7 @@ import scanpy as sc
 import torch
 import time
 import json
-import scvi
+import scarches as sca
 import numpy as np
 
 sc.set_figure_params(figsize=(4, 4))
@@ -50,10 +50,10 @@ for deep_inject in deep_injects:
 
     ref_ind = np.array([s in reference for s in adata.obs.study])
     adata_ref = adata[ref_ind].copy()
-    scvi.data.setup_anndata(adata_ref, batch_key=batch_key)
+    sca.dataset.setup_anndata(adata_ref, batch_key=batch_key)
     print(adata_ref)
 
-    vae = scvi.model.SCVI(
+    vae = sca.models.SCVI(
         adata_ref,
         n_layers=2,
         use_cuda=True,
@@ -61,7 +61,6 @@ for deep_inject in deep_injects:
         deeply_inject_covariates=deep_inject,
         use_layer_norm="both",
         use_batch_norm="none",
-        use_observed_lib_size=True
     )
 
     ref_time = time.time()
@@ -125,17 +124,13 @@ for deep_inject in deep_injects:
         adata_query = adata[query_ind].copy()
         print(adata_query)
 
-        model = scvi.model.SCVI.load_query_data(
+        model = sca.models.SCVI.load_query_data(
             adata_query,
             ref_path,
-            use_cuda=True,
             unfrozen=full_retrain,
             freeze_expression=freeze_exp,
             freeze_decoder_first_layer=freeze_decoder_first_layer,
-            freeze_batchnorm_decoder=True,
-            freeze_batchnorm_encoder=True,
             freeze_dropout=True,
-            freeze_classifier=False,
         )
 
         query_time = time.time()
