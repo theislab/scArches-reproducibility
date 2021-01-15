@@ -170,14 +170,22 @@ plot_time
     )
   
   colors <- NULL
+  
   for(i in 1:ncol(dat_mat)){
-    palette <- colorRampPalette(rev(brewer.pal(9, col_palette$name_palette[[i]])))(nrow(data)-sum(is.na(dat_mat[,i])))
-    colors <- c(colors, palette[rank(dat_mat[,i], ties.method = "average", na.last = "keep")])
+    if(col_palette$name_palette[[i]] == "YlOrRd"){
+      palette <- colorRampPalette(brewer.pal(9, col_palette$name_palette[[i]]))(nrow(data)-sum(is.na(dat_mat[,i])))
+      colors <- c(colors, palette[rank(dat_mat[,i], ties.method = "average", na.last = "keep")])
+    } else{
+      palette <- colorRampPalette(rev(brewer.pal(9, col_palette$name_palette[[i]])))(nrow(data)-sum(is.na(dat_mat[,i])))
+      colors <- c(colors, palette[rank(dat_mat[,i], ties.method = "average", na.last = "keep")])
+    }
+    
   }
   
   rect_data$colors <- colors
   
-  
+  # Remove rows with NAs (bars that should not be plotted)
+  rect_data <- rect_data[complete.cases(rect_data),]
   
   # gather text data
   ind_text <- which(column_info$geom == "text")
@@ -469,7 +477,7 @@ plot_time
 
     g <- g + geom_text(aes(x = x, y = y, label = label_value, colour = colors, hjust = hjust, vjust = vjust, size = size, fontface = fontface, angle = angle), data = text_data)
     
-    text_data_left[text_data_left$group == "Method", "x"] <- text_data_left[text_data_left$group == "Method", "x"] - 3
+    text_data_left[text_data_left$group == "Method", "x"] <- text_data_left[text_data_left$group == "Method", "x"] - 4
     
     g <- g + geom_text(aes(x = x, y = y, label = label_value, colour = colors, hjust = "left", vjust = vjust, size = size, fontface = fontface, angle = angle), data = text_data_left)
   }
