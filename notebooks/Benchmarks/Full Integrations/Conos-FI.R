@@ -47,7 +47,7 @@ t2 <- Sys.time()
 
 save.dir <- "./results/Conos/pancreas/corrected"
 dir.create(save.dir)
-saveConosForScanPy(con, output.path=save.dir, embed=TRUE, pseudo.pca=TRUE, n.dims = 10, verbose=TRUE)
+saveConosForScanPy(con, output.path=save.dir, embed=TRUE, pseudo.pca=TRUE, n.dims = 20, verbose=TRUE)
 
 
 write(as.numeric(t2 - t1, units = "secs"), file = paste0("./conos_time_pancreas.txt"))
